@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# Update with your production domain when deployed
+Sitemap: https://virasatvastra.com/sitemap.xml
+
