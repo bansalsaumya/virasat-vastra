@@ -195,36 +195,11 @@ export default function Showroom3D({
       const isMobilePortrait = window.innerWidth <= 768 && availH > canvasWidth * 0.95;
 
       if (isMobilePortrait) {
-        // 1. Rich atmospheric backdrop of the same frame so there are no dark empty bars on tall phone screens
-        ctx.save();
-        ctx.globalAlpha = 0.58;
-        ctx.drawImage(
-          img,
-          0,
-          0,
-          img.naturalWidth,
-          img.naturalHeight,
-          0,
-          topOffset,
-          canvasWidth,
-          availH
-        );
-        ctx.restore();
-
-        // Warm royal gradient over the ambient backdrop for text legibility at top & bottom
-        const grad = ctx.createLinearGradient(0, topOffset, 0, canvasHeight);
-        grad.addColorStop(0, 'rgba(20, 2, 5, 0.55)');
-        grad.addColorStop(0.14, 'rgba(20, 2, 5, 0.12)');
-        grad.addColorStop(0.62, 'rgba(20, 2, 5, 0.18)');
-        grad.addColorStop(1, 'rgba(20, 2, 5, 0.86)');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, topOffset, canvasWidth, availH);
-
-        // 2. Full uncropped 16:9 frame placed cleanly in the open upper stage at start, gliding to center on scroll
+        // 1. Full uncropped 16:9 frame placed cleanly in the open upper stage at start, gliding to center on scroll
         const naturalAspect = img.naturalWidth / img.naturalHeight;
-        const mobileFrameH = Math.min(availH, Math.round((canvasWidth / naturalAspect) * 1.24));
-        const scrollShift = Math.min(1, Math.max(0, currentProgress * 4));
-        const verticalRatio = topOffsetPx > 0 ? 0.09 + scrollShift * 0.22 : 0.22;
+        const mobileFrameH = Math.min(availH, Math.round((canvasWidth / naturalAspect) * 1.32));
+        const scrollShift = Math.min(1, Math.max(0, currentProgress * 3.8));
+        const verticalRatio = topOffsetPx > 0 ? 0.04 + scrollShift * 0.28 : 0.16;
         const mobileFrameY = topOffset + Math.round((availH - mobileFrameH) * verticalRatio);
 
         ctx.drawImage(
@@ -238,6 +213,27 @@ export default function Showroom3D({
           canvasWidth,
           mobileFrameH
         );
+
+        // 2. Smooth top & bottom feather gradients so the video blends seamlessly into #140205 with zero hard seam line
+        const topFeatherH = Math.round(mobileFrameH * 0.18);
+        const topGrad = ctx.createLinearGradient(0, mobileFrameY, 0, mobileFrameY + topFeatherH);
+        topGrad.addColorStop(0, '#140205');
+        topGrad.addColorStop(1, 'rgba(20, 2, 5, 0)');
+        ctx.fillStyle = topGrad;
+        ctx.fillRect(0, mobileFrameY - 2, canvasWidth, topFeatherH + 2);
+
+        const botFeatherH = Math.round(mobileFrameH * 0.26);
+        const botGrad = ctx.createLinearGradient(
+          0,
+          mobileFrameY + mobileFrameH - botFeatherH,
+          0,
+          mobileFrameY + mobileFrameH
+        );
+        botGrad.addColorStop(0, 'rgba(20, 2, 5, 0)');
+        botGrad.addColorStop(1, '#140205');
+        ctx.fillStyle = botGrad;
+        ctx.fillRect(0, mobileFrameY + mobileFrameH - botFeatherH, canvasWidth, botFeatherH + 2);
+
         return true;
       }
 

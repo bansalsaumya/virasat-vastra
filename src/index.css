@@ -3,6 +3,7 @@
    Exact 1:1 Luxury 3D + GSAP Styling Matched to demo.mp4 (0:00 - 0:45)
    ========================================================================== */
 :root {
+  color-scheme: light;
   --drift-burgundy: #790f1d;
   --drift-burgundy-deep: #4e0711;
   --drift-dark: #160307;
@@ -4720,7 +4721,8 @@ body {
 .vv-craft-main-frame img {
   width: 100%;
   height: 100%;
-  object-fit: fill;
+  object-fit: cover;
+  object-position: top center;
   display: block;
 }
 
@@ -5563,8 +5565,8 @@ body {
   flex-direction: column;
   gap: 0.25rem;
   margin-top: 0.75rem;
-  font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.75rem;
+  color: #5b4d42;
 }
 
 .vv-footer-policy-inline {
@@ -5662,26 +5664,39 @@ body {
   .vv-home-cat-grid,
   .vv-catalogue-products-grid,
   .vv-lookbook-grid,
-  .vv-home-lb-row,
+  .vv-home-lb-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+  }
+  .vv-home-cat-grid > .vv-home-cat-card:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 44% 1fr;
+    align-items: center;
+  }
+  .vv-home-cat-grid > .vv-home-cat-card:last-child:nth-child(odd) .vv-home-cat-img {
+    aspect-ratio: 4 / 4.2;
+    height: 100%;
+  }
   .vv-contact-info-grid,
   .vv-form-row-two,
   .vv-pdp-specs-grid,
-  .vv-pdp-related-row {
-    grid-template-columns: 1fr;
-  }
+  .vv-pdp-related-row,
   .vv-filter-selects-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .vv-ig-six-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.55rem;
   }
   .vv-whatsapp-royal-banner {
     flex-direction: column;
     align-items: flex-start;
-    padding: 1.8rem;
+    padding: 1.35rem 1.15rem;
+    gap: 1rem;
   }
   .vv-pdp-gallery-col {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .vv-pdp-thumbs-rail {
     flex-direction: row;
@@ -5739,15 +5754,6 @@ body {
   margin-bottom: 0.55rem;
 }
 
-@media (max-width: 768px) {
-  .vv-navbar-logo-img {
-    height: 42px;
-  }
-  .drift-header-wrapper.is-scrolled .vv-navbar-logo-img {
-    height: 40px;
-  }
-}
-
 /* Ensure all 4:5 Virasat Vastra campaign portraits display top-to-bottom without cutting off the top brand crest or model */
 .arch-top-frame img,
 .curved-card-inner img,
@@ -5773,40 +5779,81 @@ body {
    Desktop & Laptop (> 768px) remain 100% untouched.
    ============================================================================ */
 @media (max-width: 768px) {
+  html,
+  body,
   .drift-app-root {
+    max-width: 100%;
+    overflow-x: clip;
+    background-color: var(--drift-cream);
+    color: var(--drift-text);
+  }
+
+  /* 1. Top Announcement & Navbar on Mobile (Prevent 489px Horizontal Overflow) */
+  .drift-header-wrapper {
+    width: 100%;
+    max-width: 100vw;
     overflow-x: clip;
   }
 
-  /* 1. Top Announcement & Navbar on Mobile */
   .drift-top-announcement {
-    padding: 0.32rem 0.75rem;
-    font-size: 0.56rem;
-    letter-spacing: 0.08em;
+    width: 100%;
+    max-width: 100vw;
+    padding: 0.28rem 0.65rem;
+    font-size: 0.54rem;
+    letter-spacing: 0.06em;
     justify-content: center;
+    overflow: hidden;
   }
 
   .announcement-track {
-    gap: 0.45rem;
+    gap: 0.35rem;
+    max-width: 100%;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    justify-content: center;
   }
 
-  .announcement-track span:nth-child(n + 4) {
+  .announcement-track span:nth-child(n + 2) {
     display: none;
   }
 
   .drift-navbar,
   .drift-header-wrapper.over-hero .drift-navbar {
-    padding: 0.55rem 0.95rem;
+    width: 100%;
+    max-width: 100vw;
+    padding: 0.45rem 0.75rem;
+    gap: 0.4rem;
+  }
+
+  .drift-brand-logo {
+    flex-shrink: 1;
+    min-width: 0;
   }
 
   .vv-navbar-logo-img {
-    height: 38px;
+    height: 36px;
+    max-width: 145px;
   }
 
   .drift-header-wrapper.is-scrolled .vv-navbar-logo-img {
-    height: 36px;
+    height: 34px;
+    max-width: 140px;
+  }
+
+  .nav-col-right {
+    gap: 0.15rem;
+    flex-shrink: 0;
+  }
+
+  .nav-icon-btn {
+    padding: 0.3rem;
+  }
+
+  .vv-mobile-menu-trigger {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
   }
 
   .vv-mobile-nav-drawer {
@@ -5821,7 +5868,7 @@ body {
 
   .stage-0-content {
     justify-content: flex-end;
-    padding: 4.5rem 1.1rem 6.2rem;
+    padding: 4.2rem 0.95rem 4.9rem;
   }
 
   .hero-content-wrapper {
@@ -5829,27 +5876,27 @@ body {
   }
 
   .hero-tag-tradition {
-    font-size: 0.58rem;
-    letter-spacing: 0.18em;
-    margin-bottom: 0.35rem;
-  }
-
-  .hero-main-title {
-    font-size: clamp(2rem, 8.2vw, 2.55rem);
-    line-height: 1.05;
-    margin-bottom: 0.45rem;
-  }
-
-  .hero-story-tag {
-    font-size: 0.6rem;
+    font-size: 0.55rem;
     letter-spacing: 0.16em;
     margin-bottom: 0.25rem;
   }
 
+  .hero-main-title {
+    font-size: clamp(1.85rem, 7.6vw, 2.35rem);
+    line-height: 1.04;
+    margin-bottom: 0.35rem;
+  }
+
+  .hero-story-tag {
+    font-size: 0.56rem;
+    letter-spacing: 0.14em;
+    margin-bottom: 0.2rem;
+  }
+
   .hero-story-desc {
-    font-size: 0.78rem;
-    line-height: 1.42;
-    margin-bottom: 0.95rem;
+    font-size: 0.74rem;
+    line-height: 1.38;
+    margin-bottom: 0.75rem;
   }
 
   .hero-story-desc br {
@@ -5858,49 +5905,63 @@ body {
 
   .hero-cta-group {
     flex-wrap: wrap;
-    gap: 0.6rem;
+    gap: 0.45rem;
   }
 
   .btn-hero-explore {
-    font-size: 0.64rem;
-    padding: 0.68rem 1.15rem;
-    gap: 0.45rem;
+    font-size: 0.55rem;
+    padding: 0.52rem 0.75rem;
+    gap: 0.3rem;
+    white-space: nowrap;
   }
 
   .btn-hero-watch {
-    font-size: 0.62rem;
-    padding: 0.6rem 0.95rem;
-    gap: 0.45rem;
+    font-size: 0.54rem;
+    padding: 0.48rem 0.65rem;
+    gap: 0.3rem;
+    white-space: nowrap;
+  }
+
+  .watch-play-ring {
+    width: 22px;
+    height: 22px;
   }
 
   .hero-bottom-floating-bar {
-    left: 0.85rem;
-    right: 0.85rem;
+    left: 0.75rem;
+    right: 0.75rem;
     bottom: 10px;
-    padding: 0.52rem 0.7rem;
-    gap: 0.55rem;
-    justify-content: space-between;
-    overflow-x: auto;
+    padding: 0.45rem 0.65rem;
+    gap: 0.45rem;
+    justify-content: space-around;
+    overflow: hidden;
+  }
+
+  .hero-bottom-floating-bar .floating-badge-item:nth-child(3) {
+    display: none;
   }
 
   .floating-badge-item {
-    gap: 0.35rem;
-    flex-shrink: 0;
+    gap: 0.3rem;
+    flex-shrink: 1;
+    min-width: 0;
   }
 
   .floating-badge-item strong {
-    font-size: 0.62rem;
+    font-size: 0.58rem;
+    white-space: nowrap;
   }
 
   .floating-badge-item span {
-    font-size: 0.54rem;
+    font-size: 0.5rem;
+    white-space: nowrap;
   }
 
   .showroom-poetic-caption.bottom-left,
   .showroom-poetic-caption.top-right {
-    left: 1rem;
-    right: 1rem;
-    bottom: 14%;
+    left: 0.9rem;
+    right: 0.9rem;
+    bottom: 13%;
     top: auto;
     max-width: 100%;
     text-align: center;
@@ -5908,8 +5969,8 @@ body {
 
   .showroom-poetic-caption p,
   .showroom-poetic-caption.top-right p {
-    font-size: 1.15rem;
-    line-height: 1.3;
+    font-size: 1.08rem;
+    line-height: 1.28;
   }
 
   /* 3. Section Spacing & Headings on Mobile */
@@ -5928,7 +5989,7 @@ body {
   .vv-lookbook-gallery-sec,
   .vv-contact-main-sec,
   .vv-story-chapters-sec {
-    padding: 2.4rem 1rem;
+    padding: 2rem 0.9rem;
   }
 
   .moods-header-row,
@@ -5938,17 +5999,17 @@ body {
   .vv-sec-head-row {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.55rem;
-    margin-bottom: 1.25rem;
+    gap: 0.45rem;
+    margin-bottom: 1.1rem;
   }
 
   .curved-section-header {
-    padding: 0 1rem;
+    padding: 0 0.9rem;
   }
 
   .moods-title-group {
     flex-direction: column;
-    gap: 0.15rem;
+    gap: 0.1rem;
   }
 
   .moods-big-title,
@@ -5957,21 +6018,22 @@ body {
   .bridal-title,
   .edits-stencil-title,
   .worth-title,
-  .aw-title-center h2 {
-    font-size: 1.65rem;
+  .aw-title-center h2,
+  .vv-sec-head-row h2 {
+    font-size: 1.5rem;
     line-height: 1.12;
   }
 
   .moods-right-blurb {
     text-align: left;
     max-width: 100%;
-    font-size: 0.76rem;
+    font-size: 0.74rem;
   }
 
-  /* 4. 6 Arches ("ROYAL SILHOUETTES") on Mobile: Clean 2-Column Grid */
+  /* 4. 6 Arches ("ROYAL SILHOUETTES") on Mobile: Clean 2-Column Grid with Unclipped Top-Left Logo */
   .six-moods-arch-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.85rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
   }
 
   .arch-jharokha-wrapper.arch-wave-0,
@@ -5980,13 +6042,17 @@ body {
   }
 
   .arch-top-frame {
-    aspect-ratio: 4 / 5.2;
-    border-radius: 85px 85px 6px 6px;
+    aspect-ratio: 4 / 5;
+    border-radius: 18px 18px 6px 6px;
+  }
+
+  .arch-card-footer {
+    padding: 0.45rem 0.2rem 0.15rem;
   }
 
   .arch-card-footer span {
-    font-size: 0.62rem;
-    letter-spacing: 0.1em;
+    font-size: 0.58rem;
+    letter-spacing: 0.08em;
   }
 
   .arch-hover-drawer {
@@ -5995,48 +6061,48 @@ body {
 
   /* 5. 3D Concave Curved Carousel on Mobile */
   .curved-ribbon-section {
-    padding: 2.4rem 0 2.2rem;
+    padding: 2rem 0 1.8rem;
   }
 
   .concave-panorama-viewport {
-    height: 340px;
+    height: 315px;
     perspective: 900px;
   }
 
   .concave-arc-card {
-    width: 205px;
-    height: 305px;
+    width: 192px;
+    height: 285px;
   }
 
   .concave-card-overlay {
-    bottom: 22px;
-    left: 12px;
-    right: 12px;
+    bottom: 18px;
+    left: 10px;
+    right: 10px;
   }
 
   .concave-card-overlay h4 {
-    font-size: 0.96rem;
+    font-size: 0.9rem;
   }
 
   .concave-card-overlay p {
-    font-size: 0.6rem;
+    font-size: 0.56rem;
   }
 
   /* 6. Marquee Cards & Product Rows on Mobile */
   .catalog-marquee-track .drift-catalog-card {
-    width: 205px;
+    width: 190px;
   }
 
   .card-info-box {
-    padding: 0.75rem;
+    padding: 0.65rem;
   }
 
   .card-name {
-    font-size: 0.92rem;
+    font-size: 0.86rem;
   }
 
   .price-tag {
-    font-size: 0.86rem;
+    font-size: 0.82rem;
   }
 
   .card-quick-slide-bar {
@@ -6047,95 +6113,127 @@ body {
   }
 
   .card-quick-slide-bar button {
-    padding: 0.38rem 0.5rem;
-    font-size: 0.56rem;
+    padding: 0.34rem 0.45rem;
+    font-size: 0.54rem;
   }
 
-  /* 7. Shahi Vivah Bridal Section (#bridal) on Mobile */
+  /* 7. Shahi Vivah Bridal Section (#bridal) on Mobile — Prevent Right Overflow */
+  .bridal-editorial-section {
+    overflow: hidden;
+  }
+
   .bridal-inner-content {
-    padding: 1.5rem 1rem 2rem;
+    padding: 1.4rem 0.9rem 1.8rem;
   }
 
   .bridal-grid-layout {
-    grid-template-columns: 1fr;
-    gap: 1.6rem;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.35rem;
+  }
+
+  .bridal-left-col,
+  .bridal-right-showcase {
+    min-width: 0;
+    max-width: 100%;
   }
 
   .bridal-poster-frame {
-    max-width: 340px;
+    max-width: 100%;
     margin: 0 auto;
   }
 
   .bridal-polaroid-row {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+
+  .bridal-polaroid-card {
+    min-width: 0;
+    padding: 0.45rem 0.45rem 0.6rem;
   }
 
   .bridal-polaroid-body h5 {
+    font-size: 0.72rem;
+    line-height: 1.2;
+    white-space: normal;
+  }
+
+  .polaroid-meta-line {
+    font-size: 0.58rem;
+  }
+
+  .polaroid-price-row strong {
     font-size: 0.76rem;
   }
 
   .btn-bridal-mustard-cart {
-    font-size: 0.58rem;
-    padding: 0.45rem 0.35rem;
+    font-size: 0.54rem;
+    padding: 0.42rem 0.3rem;
   }
 
   /* 8. Trend of the Day & Seasonal Special on Mobile */
   .trend-cards-grid {
-    grid-template-columns: 1fr;
-    gap: 0.85rem;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.65rem;
   }
 
   .trend-row-title {
-    font-size: 1.35rem;
-    margin-bottom: 0.9rem;
+    font-size: 1.28rem;
+    margin-bottom: 0.75rem;
   }
 
   /* 9. 3 Trio Arches ("Heirlooms of the Season") & "Change Look" Studio on Mobile */
   .aw-forecast-container {
-    margin-bottom: 2.8rem;
+    margin-bottom: 2.2rem;
   }
 
   .aw-header-grid {
-    grid-template-columns: 1fr;
-    gap: 0.65rem;
-    margin-bottom: 1.4rem;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1.15rem;
   }
 
   .aw-blurb-right {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.5rem;
+    gap: 0.45rem;
   }
 
   .aw-three-arches {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.6rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+
+  .aw-three-arches > .aw-arch-card:nth-child(3) {
+    grid-column: 1 / -1;
+    max-width: 62%;
+    margin: 0 auto;
+    width: 100%;
   }
 
   .aw-arch-card {
-    border-radius: 60px 60px 4px 4px;
-    aspect-ratio: 3 / 4.2;
+    border-radius: 18px 18px 6px 6px;
+    aspect-ratio: 4 / 5;
   }
 
   .aw-arch-caption {
-    padding: 0.55rem 0.35rem 0.45rem;
+    padding: 0.55rem 0.45rem 0.5rem;
   }
 
   .aw-arch-caption span {
-    font-size: 0.46rem;
-    letter-spacing: 0.1em;
+    font-size: 0.52rem;
+    letter-spacing: 0.08em;
   }
 
   .aw-arch-caption strong {
-    font-size: 0.72rem;
+    font-size: 0.78rem;
     display: block;
-    line-height: 1.15;
+    line-height: 1.18;
   }
 
   .look-customizer-box {
-    grid-template-columns: 1fr;
-    gap: 1.4rem;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.1rem;
   }
 
   .look-thumbs-column {
@@ -6147,12 +6245,12 @@ body {
     flex-direction: row;
     justify-content: center;
     padding-left: 0;
-    gap: 0.65rem;
+    gap: 0.6rem;
   }
 
   .thumb-hanging-card {
-    width: 72px;
-    height: 94px;
+    width: 68px;
+    height: 88px;
   }
 
   .new-drop-handwritten {
@@ -6160,18 +6258,18 @@ body {
   }
 
   .look-center-model-stage {
-    min-height: 390px;
+    min-height: 350px;
   }
 
   .look-model-figure-wrap {
-    max-width: 280px;
-    height: 380px;
+    max-width: 265px;
+    height: 345px;
   }
 
   .look-editorial-portrait-card {
-    width: 256px;
-    height: 365px;
-    border-radius: 130px 130px 12px 12px;
+    width: 245px;
+    height: 330px;
+    border-radius: 22px 22px 10px 10px;
   }
 
   .look-specs-column {
@@ -6179,22 +6277,22 @@ body {
   }
 
   .specs-product-title {
-    font-size: 1.55rem;
+    font-size: 1.45rem;
   }
 
   .specs-price-tag {
-    font-size: 1.15rem;
+    font-size: 1.1rem;
   }
 
   .specs-micro-features {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.55rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
   }
 
   .swatches-and-tilted-cta {
     flex-direction: column;
     align-items: stretch;
-    gap: 1rem;
+    gap: 0.85rem;
   }
 
   .tilted-cta-cluster {
@@ -6204,7 +6302,7 @@ body {
   .btn-diagonal-add-cart {
     transform: none;
     width: 100%;
-    height: 52px;
+    height: 48px;
     justify-content: space-between;
   }
 
@@ -6214,135 +6312,268 @@ body {
 
   /* 10. Grand Celebrations (4 Cards) & Royal Archive Vault Accordion on Mobile */
   .edits-four-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+
+  .edit-magazine-card {
+    aspect-ratio: 3 / 4.3;
+    border-radius: 8px;
   }
 
   .edit-card-shade {
-    padding: 0.85rem;
+    padding: 0.65rem;
+    background: linear-gradient(to top, rgba(16, 2, 5, 0.9) 0%, rgba(16, 2, 5, 0.25) 48%, transparent 100%);
   }
 
   .edit-card-shade h4 {
-    font-size: 1rem;
+    font-size: 0.88rem;
+    line-height: 1.15;
   }
 
   .edit-card-shade p {
-    font-size: 0.62rem;
-    margin-bottom: 0.35rem;
+    font-size: 0.56rem;
+    line-height: 1.25;
+    margin-bottom: 0.25rem;
   }
 
   .worth-attention-wrapper {
-    margin-top: 2.6rem;
+    margin-top: 2.2rem;
   }
 
   .worth-accordion-strip {
     flex-direction: column;
     height: auto;
-    gap: 0.6rem;
+    gap: 0.55rem;
   }
 
   .worth-strip-panel.collapsed {
     flex: none;
-    height: 68px;
+    height: 62px;
   }
 
   .worth-strip-panel.expanded {
     flex: none;
-    height: 270px;
+    height: 255px;
   }
 
   .worth-collapsed-overlay {
     flex-direction: row;
-    padding: 0 1rem;
+    padding: 0 0.9rem;
   }
 
   .worth-vertical-label {
     writing-mode: horizontal-tb;
     transform: none;
+    font-size: 0.78rem;
   }
 
   .worth-expanded-content {
-    padding: 1.15rem;
+    padding: 1rem;
   }
 
   .worth-expanded-content h4 {
-    font-size: 1.35rem;
+    font-size: 1.25rem;
   }
 
   /* 11. "Living Looms, in Motion" (#stories-motion) on Mobile */
   .stories-top-header {
-    padding: 0.65rem 1rem;
+    padding: 0.6rem 0.9rem;
   }
 
   .stories-top-header h4 {
-    font-size: 1.15rem;
+    font-size: 1.05rem;
   }
 
   .stories-stage-body {
-    padding: 1.2rem 1rem 1.4rem;
+    padding: 1rem 0.9rem 1.2rem;
   }
 
   .cinematic-front-layout {
     flex-direction: column;
     align-items: stretch;
-    gap: 1rem;
+    gap: 0.85rem;
   }
 
   .cinematic-story-name {
-    font-size: 1.9rem;
-    margin-bottom: 0.35rem;
-  }
-
-  .cinematic-story-name br {
-    display: none;
+    font-size: 1.38rem;
+    line-height: 1.1;
+    margin-bottom: 0.3rem;
   }
 
   .cinematic-story-sub {
-    font-size: 0.74rem;
-    line-height: 1.4;
+    font-size: 0.7rem;
+    line-height: 1.36;
   }
 
   .cinematic-strip-top-bar {
-    font-size: 0.6rem;
-    gap: 0.5rem;
+    font-size: 0.56rem;
+    gap: 0.4rem;
     flex-wrap: wrap;
   }
 
   .cinematic-reels-strip {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.45rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.4rem;
   }
 
   .reel-thumbnail-box {
     width: 100%;
-    height: 68px;
+    height: 62px;
   }
 
   .reel-title-caption {
-    font-size: 0.54rem;
+    font-size: 0.5rem;
     line-height: 1.1;
   }
 
-  /* 12. Virasat Journal 3D Book Spread & Footer on Mobile */
-  .trends-feature-split {
-    grid-template-columns: 1fr;
+  /* 12. Featured Saree Collections, Craftsmanship & Lookbook Cards on Mobile */
+  .vv-home-cat-info {
+    padding: 0.6rem 0.65rem;
+    gap: 0.4rem;
+  }
+
+  .vv-home-cat-info h4 {
+    font-size: 0.88rem;
+    line-height: 1.15;
+    margin-bottom: 0.15rem;
+  }
+
+  .vv-home-cat-info p {
+    font-size: 0.6rem;
+    line-height: 1.25;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .vv-home-cat-arrow {
+    width: 24px;
+    height: 24px;
+  }
+
+  .vv-home-cat-badge {
+    top: 6px;
+    left: 6px;
+    font-size: 0.48rem;
+    padding: 0.16rem 0.4rem;
+  }
+
+  .vv-home-craft-grid {
     gap: 1.8rem;
   }
 
+  .vv-craft-main-frame {
+    width: 90%;
+  }
+
+  .vv-craft-detail-frame {
+    width: 38%;
+    bottom: -12px;
+  }
+
+  .vv-home-craft-copy h2 {
+    font-size: 1.75rem;
+  }
+
+  .vv-craft-lead {
+    font-size: 1.05rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .vv-craft-body {
+    font-size: 0.8rem;
+    line-height: 1.55;
+    margin-bottom: 1.1rem;
+  }
+
+  .vv-craft-highlights-row {
+    gap: 0.5rem;
+    padding: 0.85rem 0;
+    margin-bottom: 1.2rem;
+  }
+
+  .vv-craft-stat strong {
+    font-size: 0.78rem;
+  }
+
+  .vv-craft-stat span {
+    font-size: 0.62rem;
+  }
+
+  .vv-home-lb-shade {
+    padding: 0.65rem;
+  }
+
+  .vv-home-lb-shade span {
+    font-size: 0.5rem;
+  }
+
+  .vv-home-lb-shade h4 {
+    font-size: 0.88rem;
+    line-height: 1.15;
+    margin: 0.15rem 0 0.35rem;
+  }
+
+  .vv-lb-mini-zoom {
+    font-size: 0.54rem;
+    padding: 0.22rem 0.45rem;
+  }
+
+  /* Subpage 2-Col Catalogue & Category Card Compact Mobile Sizing */
+  .vv-catalogue-card-body {
+    padding: 0.7rem 0.75rem 0.85rem;
+  }
+
+  .vv-catalogue-card-body h3 {
+    font-size: 0.95rem;
+    line-height: 1.2;
+  }
+
+  .vv-card-work-line {
+    font-size: 0.65rem;
+    margin-bottom: 0.55rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .vv-card-price {
+    font-size: 0.84rem;
+  }
+
+  .vv-btn-inspect {
+    font-size: 0.58rem;
+    padding: 0.25rem 0.45rem;
+  }
+
+  .vv-btn-card-whatsapp {
+    font-size: 0.6rem;
+    padding: 0.5rem 0.5rem;
+  }
+
+  /* 13. Virasat Journal 3D Book Spread & Footer on Mobile */
+  .trends-feature-split {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.4rem;
+  }
+
   .title-latest-trends {
-    font-size: 2rem;
+    font-size: 1.75rem;
   }
 
   .magazine-book-spread {
-    max-width: 300px;
+    max-width: 280px;
     transform: none;
   }
 
   .footer-cols-wrap {
-    padding: 0 1.1rem;
+    padding: 0 1rem;
     grid-template-columns: 1fr 1fr;
-    gap: 1.4rem;
+    gap: 1.2rem;
   }
 
   .footer-brand-column,
@@ -6351,47 +6582,51 @@ body {
   }
 
   .footer-courtyard-stage {
-    min-height: 220px;
+    min-height: 195px;
   }
 
   .footer-muses-row {
-    padding: 0 0.65rem 4.2rem;
-    gap: 0.45rem;
+    padding: 0 0.6rem 3.8rem;
+    gap: 0.4rem;
+  }
+
+  .footer-muse-arch:nth-child(5) {
+    display: none;
   }
 
   .footer-muse-arch,
   .footer-muse-arch.muse-pos-1,
   .footer-muse-arch.muse-pos-2,
   .footer-muse-arch.muse-pos-3 {
-    width: 20%;
+    width: 23.5%;
     transform: none;
-    border-radius: 40px 40px 4px 4px;
+    border-radius: 16px 16px 4px 4px;
   }
 
   .muse-tag {
-    font-size: 0.52rem;
-    padding: 0.3rem 0.15rem 0.2rem;
+    font-size: 0.5rem;
+    padding: 0.28rem 0.15rem 0.2rem;
   }
 
   .footer-bottom-overlay-bar {
-    padding: 0.65rem 0.85rem;
+    padding: 0.55rem 0.75rem;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.25rem;
     text-align: center;
-    font-size: 0.6rem;
+    font-size: 0.56rem;
   }
 
-  /* 13. Subpages & Modals on Mobile */
+  /* 14. Subpages & Modals on Mobile */
   .vv-subpage-hero {
-    padding: 2.6rem 1.1rem 2.2rem;
+    padding: 2.2rem 1rem 1.8rem;
   }
 
   .vv-subpage-title {
-    font-size: 2rem;
+    font-size: 1.8rem;
   }
 
   .vv-subpage-lead {
-    font-size: 0.84rem;
+    font-size: 0.8rem;
   }
 
   .vv-pdp-modal-card,
@@ -6399,32 +6634,13 @@ body {
   .vv-policy-modal-card {
     width: 96vw;
     max-height: 92vh;
-    padding: 1.1rem;
+    padding: 1rem;
   }
 
   .vv-floating-whatsapp-fab {
     bottom: 14px;
     right: 14px;
-    padding: 0.72rem;
+    padding: 0.68rem;
   }
 }
 
-@media (max-width: 480px) {
-  .aw-three-arches {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    max-width: 290px;
-  }
-
-  .aw-arch-card {
-    border-radius: 120px 120px 6px 6px;
-  }
-
-  .aw-arch-caption span {
-    font-size: 0.56rem;
-  }
-
-  .aw-arch-caption strong {
-    font-size: 0.95rem;
-  }
-}
