@@ -278,14 +278,23 @@ export default function App() {
 
     const ctx = gsap.context(() => {
       // 1. Pinned Hero Showroom Video Scroll-Scrub Walkthrough (00:00 -> 00:08)
+      // Discrete portion-by-portion snapping so 1 scroll smoothly completes the entire scene portion
       if (heroSectionRef.current) {
+        const HERO_CHECKPOINTS = [0, 0.24, 0.56, 0.79, 1];
         ScrollTrigger.create({
           trigger: heroSectionRef.current,
           start: 'top top',
           end: '+=320%',
           pin: true,
-          scrub: 0.35,
+          scrub: 0.25,
           invalidateOnRefresh: true,
+          snap: {
+            snapTo: HERO_CHECKPOINTS,
+            duration: { min: 0.5, max: 0.9 },
+            delay: 0.04,
+            ease: 'power2.inOut',
+            directional: true
+          },
           onUpdate: (self) => {
             const p = self.progress;
             setHeroProgress(p);
@@ -386,13 +395,23 @@ export default function App() {
 
       // 5. Stories in Motion Scroll-Triggered Video Walkthrough & Chapter Switcher
       if (storiesSectionRef.current) {
+        const STORIES_CHECKPOINTS = STORIES_REELS.map((_, idx) =>
+          STORIES_REELS.length > 1 ? idx / (STORIES_REELS.length - 1) : 0
+        );
         ScrollTrigger.create({
           trigger: storiesSectionRef.current,
           start: 'top top',
           end: '+=280%',
           pin: true,
-          scrub: 0.35,
+          scrub: 0.25,
           invalidateOnRefresh: true,
+          snap: {
+            snapTo: STORIES_CHECKPOINTS,
+            duration: { min: 0.45, max: 0.85 },
+            delay: 0.04,
+            ease: 'power2.inOut',
+            directional: true
+          },
           onUpdate: (self) => {
             const p = self.progress;
             setStoriesProgress(p);

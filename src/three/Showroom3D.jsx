@@ -45,11 +45,22 @@ export default function Showroom3D({
           img.fetchPriority = 'high';
         }
         img.onload = () => {
-          if (!cancelled) {
-            framesRef.current[idx0] = img;
-            lastDrawnFrameRef.current = -1;
+          if (cancelled) {
+            resolve();
+            return;
           }
-          resolve();
+          const finalize = () => {
+            if (!cancelled) {
+              framesRef.current[idx0] = img;
+              lastDrawnFrameRef.current = -1;
+            }
+            resolve();
+          };
+          if (typeof img.decode === 'function') {
+            img.decode().then(finalize).catch(finalize);
+          } else {
+            finalize();
+          }
         };
         img.onerror = () => resolve();
         img.src = getFrameSrc(framesDir, totalFrames, idx0 + 1, cacheVersion);
@@ -103,7 +114,7 @@ export default function Showroom3D({
     const startWorkers = () => {
       if (cancelled || streamingStarted) return;
       streamingStarted = true;
-      const CONCURRENCY = topOffsetPx > 0 ? 4 : 3;
+      const CONCURRENCY = topOffsetPx > 0 ? 3 : 2;
       const runWorker = async () => {
         while (!cancelled && pendingQueue.length > 0) {
           const nextIdx = pickNextFrameIdx();
@@ -177,7 +188,7 @@ export default function Showroom3D({
         return false;
       }
 
-      const dpr = window.devicePixelRatio || 1;
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
       let effectiveTopPx = topOffsetPx;
       if (topOffsetPx > 0) {
         const announceBar = document.querySelector('.drift-top-announcement');
@@ -260,7 +271,7 @@ export default function Showroom3D({
     const syncCanvasDimensions = () => {
       const canvas = canvasRef.current;
       if (!canvas) return false;
-      const dpr = window.devicePixelRatio || 1;
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
       const parent = wrapRef.current || canvas.parentElement;
       const rect = parent ? parent.getBoundingClientRect() : null;
       const cssW = rect && rect.width > 0 ? rect.width : window.innerWidth;
@@ -289,8 +300,6 @@ export default function Showroom3D({
     }
 
     const renderLoop = () => {
-      syncCanvasDimensions();
-
       const diff = targetProgressRef.current - smoothProgressRef.current;
       if (Math.abs(diff) > 0.0001) {
         smoothProgressRef.current += diff * 0.24;
@@ -303,19 +312,20 @@ export default function Showroom3D({
 
       const canvas = canvasRef.current;
       if (canvas) {
-        const sizeKey = `${canvas.width}x${canvas.height}x${window.innerWidth <= 768 ? 'm' : 'd'}`;
+        const isMobile = window.innerWidth <= 768;
+        const sizeKey = `${canvas.width}x${canvas.height}x${isMobile ? 'm' : 'd'}`;
         const needsRedraw =
           primaryIdx !== lastDrawnFrameRef.current ||
           sizeKey !== lastDrawnSizeRef.current ||
-          Math.abs(diff) > 0.0005;
+          (isMobile && Math.abs(diff) > 0.0005);
 
         if (needsRedraw) {
-          const ctx = canvas.getContext('2d');
+          const ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
           const primaryImg = getNearestLoadedFrame(primaryIdx);
 
           if (ctx && primaryImg) {
             ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = 'high';
+            ctx.imageSmoothingQuality = 'medium';
             const didDraw = drawFullFrameImage(
               ctx,
               primaryImg,
