@@ -8,6 +8,7 @@ function getFrameSrc(framesDir, totalFrames, index1Based, cacheVersion) {
 
 export default function Showroom3D({
   scrollProgress = 0,
+  progressRef = null,
   framesDir = '/assets/hero_women_frames',
   totalFrames = 301,
   topOffsetPx = 29,
@@ -16,10 +17,11 @@ export default function Showroom3D({
   const wrapRef = useRef(null);
   const canvasRef = useRef(null);
   const framesRef = useRef(new Array(totalFrames).fill(null));
-  const targetProgressRef = useRef(scrollProgress);
-  const smoothProgressRef = useRef(scrollProgress);
+  const targetProgressRef = useRef(progressRef ? progressRef.current : scrollProgress);
+  const smoothProgressRef = useRef(progressRef ? progressRef.current : scrollProgress);
   const lastDrawnFrameRef = useRef(-1);
   const lastDrawnSizeRef = useRef('');
+  const effectiveTopPxRef = useRef(topOffsetPx);
 
   // Keep target scroll progress updated without restarting the RAF loop
   useEffect(() => {
@@ -189,14 +191,7 @@ export default function Showroom3D({
       }
 
       const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
-      let effectiveTopPx = topOffsetPx;
-      if (topOffsetPx > 0) {
-        const announceBar = document.querySelector('.drift-top-announcement');
-        if (announceBar && announceBar.offsetHeight > 0) {
-          effectiveTopPx = announceBar.offsetHeight;
-        }
-      }
-      const topOffset = Math.round(effectiveTopPx * dpr);
+      const topOffset = Math.round(effectiveTopPxRef.current * dpr);
       const availH = Math.max(1, canvasHeight - topOffset);
 
       ctx.clearRect(0, 0, canvasWidth, canvasHeight);
@@ -271,6 +266,16 @@ export default function Showroom3D({
     const syncCanvasDimensions = () => {
       const canvas = canvasRef.current;
       if (!canvas) return false;
+      if (topOffsetPx > 0) {
+        const announceBar = document.querySelector('.drift-top-announcement');
+        if (announceBar && announceBar.offsetHeight > 0) {
+          effectiveTopPxRef.current = announceBar.offsetHeight;
+        } else {
+          effectiveTopPxRef.current = topOffsetPx;
+        }
+      } else {
+        effectiveTopPxRef.current = 0;
+      }
       const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
       const parent = wrapRef.current || canvas.parentElement;
       const rect = parent ? parent.getBoundingClientRect() : null;
@@ -300,7 +305,9 @@ export default function Showroom3D({
     }
 
     const renderLoop = () => {
-      const diff = targetProgressRef.current - smoothProgressRef.current;
+      const latestTarget = progressRef ? Math.max(0, Math.min(1, progressRef.current)) : targetProgressRef.current;
+      targetProgressRef.current = latestTarget;
+      const diff = latestTarget - smoothProgressRef.current;
       if (Math.abs(diff) > 0.0001) {
         smoothProgressRef.current += diff * 0.24;
       } else {

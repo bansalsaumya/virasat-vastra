@@ -68,7 +68,8 @@ export default function App() {
 
   // 3. Hero Pinned 3D Showroom Walkthrough (0:02 - 0:07: Stage 0, 1, 2)
   const heroSectionRef = useRef(null);
-  const [heroProgress, setHeroProgress] = useState(0);
+  const heroProgressRef = useRef(0);
+  const stage0OverlayRef = useRef(null);
   const [heroStage, setHeroStage] = useState(0);
 
   // 3b. Active Arch Card in "ROYAL SILHOUETTES" (6 Arches)
@@ -101,7 +102,7 @@ export default function App() {
   // 8. "Woven silks, in motion" Video Stories (0:34 - 0:37)
   const storiesSectionRef = useRef(null);
   const [activeStoryIdx, setActiveStoryIdx] = useState(0);
-  const [storiesProgress, setStoriesProgress] = useState(0);
+  const storiesProgressRef = useRef(0);
 
   // 9. "LATEST TRENDS" 3D Magazine Spread Flipper (0:38 - 0:41)
   const [spreadIdx, setSpreadIdx] = useState(0);
@@ -290,18 +291,20 @@ export default function App() {
           invalidateOnRefresh: true,
           snap: {
             snapTo: HERO_CHECKPOINTS,
-            duration: { min: 0.5, max: 0.9 },
-            delay: 0.04,
+            duration: { min: 0.55, max: 1.0 },
+            delay: 0.02,
             ease: 'power2.inOut',
             directional: true
           },
           onUpdate: (self) => {
             const p = self.progress;
-            setHeroProgress(p);
-            if (p < 0.20) setHeroStage(0);
-            else if (p < 0.62) setHeroStage(1);
-            else if (p < 0.79) setHeroStage(2);
-            else setHeroStage(3);
+            heroProgressRef.current = p;
+            if (stage0OverlayRef.current) {
+              stage0OverlayRef.current.style.opacity = String(Math.max(0, 1 - p * 4.6));
+              stage0OverlayRef.current.style.transform = `translate3d(0, ${-p * 140}px, 0)`;
+            }
+            const nextStage = p < 0.20 ? 0 : p < 0.62 ? 1 : p < 0.79 ? 2 : 3;
+            setHeroStage((prev) => (prev === nextStage ? prev : nextStage));
           }
         });
       }
@@ -408,18 +411,18 @@ export default function App() {
           snap: {
             snapTo: STORIES_CHECKPOINTS,
             duration: { min: 0.45, max: 0.85 },
-            delay: 0.04,
+            delay: 0.02,
             ease: 'power2.inOut',
             directional: true
           },
           onUpdate: (self) => {
             const p = self.progress;
-            setStoriesProgress(p);
+            storiesProgressRef.current = p;
             const idx = Math.min(
               STORIES_REELS.length - 1,
               Math.floor(p * STORIES_REELS.length)
             );
-            setActiveStoryIdx(idx);
+            setActiveStoryIdx((prev) => (prev === idx ? prev : idx));
           }
         });
       }
@@ -760,7 +763,7 @@ export default function App() {
         <div className="hero-media-stage">
           <Suspense fallback={<div className="hero-3d-fallback" />}>
             <Showroom3D
-              scrollProgress={heroProgress}
+              progressRef={heroProgressRef}
               framesDir="/assets/hero_women_frames"
               totalFrames={301}
               topOffsetPx={29}
@@ -772,11 +775,8 @@ export default function App() {
 
         {/* STAGE 0 OVERLAY: Entrance View Copy + Bottom Trust Bar (fades & rises on scroll) */}
         <div
+          ref={stage0OverlayRef}
           className={`hero-stage-overlay stage-0-content ${heroStage === 0 ? 'is-active' : 'is-hidden'}`}
-          style={{
-            opacity: Math.max(0, 1 - heroProgress * 4.6),
-            transform: `translate3d(0, ${-heroProgress * 140}px, 0)`
-          }}
         >
           <div className="hero-content-wrapper">
             <div className="hero-tag-tradition">SHAHI KARIGARI • SINCE 1984</div>
@@ -1768,7 +1768,7 @@ export default function App() {
           <div className="cinematic-backdrop-preview">
             <Suspense fallback={null}>
               <Showroom3D
-                scrollProgress={storiesProgress}
+                progressRef={storiesProgressRef}
                 videoSrc="/assets/showroom_walkthrough.mp4"
                 framesDir="/assets/showroom_frames"
                 totalFrames={241}
@@ -1820,9 +1820,8 @@ export default function App() {
                     className={`reel-thumbnail-box ${activeStoryIdx === idx ? 'active' : ''}`}
                     onClick={() => {
                       setActiveStoryIdx(idx);
-                      setStoriesProgress(
-                        STORIES_REELS.length > 1 ? idx / (STORIES_REELS.length - 1) : 0
-                      );
+                      storiesProgressRef.current =
+                        STORIES_REELS.length > 1 ? idx / (STORIES_REELS.length - 1) : 0;
                     }}
                   >
                     <img src={reel.thumb} alt={reel.title} />
