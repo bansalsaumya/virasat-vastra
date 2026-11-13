@@ -11,8 +11,9 @@ export default function Showroom3D({
   progressRef = null,
   framesDir = '/assets/hero_women_frames',
   totalFrames = 301,
+  frameStep = 2,
   topOffsetPx = 29,
-  cacheVersion = '3'
+  cacheVersion = '4'
 }) {
   const wrapRef = useRef(null);
   const canvasRef = useRef(null);
@@ -68,25 +69,21 @@ export default function Showroom3D({
         img.src = getFrameSrc(framesDir, totalFrames, idx0 + 1, cacheVersion);
       });
 
-    // Build priority order: Wave 1 (every 10th), Wave 2 (every 3rd), Wave 3 (remaining)
+    // Build priority order using frameStep (halves network + RAM load while staying silky smooth):
+    // Wave 1 (coarse scrub keyframes), Wave 2 (intermediate stepped frames)
+    const step = Math.max(1, frameStep);
     const pendingQueue = [];
     const seen = new Set([0, totalFrames - 1]);
-    for (let i = 0; i < totalFrames; i += 10) {
+    for (let i = 0; i < totalFrames; i += step * 5) {
       if (!seen.has(i)) {
         seen.add(i);
         pendingQueue.push({ idx: i, wave: 1 });
       }
     }
-    for (let i = 0; i < totalFrames; i += 3) {
+    for (let i = 0; i < totalFrames; i += step) {
       if (!seen.has(i)) {
         seen.add(i);
         pendingQueue.push({ idx: i, wave: 2 });
-      }
-    }
-    for (let i = 0; i < totalFrames; i++) {
-      if (!seen.has(i)) {
-        seen.add(i);
-        pendingQueue.push({ idx: i, wave: 3 });
       }
     }
 
@@ -139,11 +136,9 @@ export default function Showroom3D({
       }
     });
 
-    // 2. For lower-page video (#stories-motion), wait until near viewport or after 1.4s idle
+    // 2. For lower-page video (#stories-motion), ONLY load when user scrolls near it (never compete with Hero load!)
     let observer;
-    let idleTimer;
     if (topOffsetPx === 0) {
-      idleTimer = setTimeout(startWorkers, 1400);
       if (typeof IntersectionObserver !== 'undefined' && wrapRef.current) {
         observer = new IntersectionObserver(
           (entries) => {
@@ -152,18 +147,19 @@ export default function Showroom3D({
               observer.disconnect();
             }
           },
-          { rootMargin: '1500px 0px' }
+          { rootMargin: '900px 0px' }
         );
         observer.observe(wrapRef.current);
+      } else {
+        startWorkers();
       }
     }
 
     return () => {
       cancelled = true;
-      clearTimeout(idleTimer);
       if (observer) observer.disconnect();
     };
-  }, [framesDir, totalFrames, cacheVersion, topOffsetPx]);
+  }, [framesDir, totalFrames, frameStep, cacheVersion, topOffsetPx]);
 
   // Find the nearest loaded frame if the exact frame is still streaming in
   const getNearestLoadedFrame = (targetIdx) => {

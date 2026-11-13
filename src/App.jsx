@@ -257,21 +257,40 @@ export default function App() {
     return () => window.removeEventListener('scroll', onScroll);
   }, [activePage]);
 
-  // Continuous gentle auto-glide for the 3D Concave Curved Carousel
+  // Continuous gentle auto-glide for the 3D Concave Curved Carousel (ONLY runs when visible in viewport!)
   useEffect(() => {
     let rafId;
     let lastTime = performance.now();
+    let isVisible = false;
+
+    let observer;
+    if (typeof IntersectionObserver !== 'undefined' && curvedSectionRef.current) {
+      observer = new IntersectionObserver(
+        (entries) => {
+          isVisible = entries.some((e) => e.isIntersecting);
+          if (isVisible) lastTime = performance.now();
+        },
+        { rootMargin: '200px 0px' }
+      );
+      observer.observe(curvedSectionRef.current);
+    } else {
+      isVisible = true;
+    }
+
     const tick = (now) => {
-      const dt = (now - lastTime) / 1000;
+      const dt = Math.min(0.05, (now - lastTime) / 1000);
       lastTime = now;
-      if (!isDraggingRef.current && !isCarouselHoveredRef.current) {
+      if (isVisible && !isDraggingRef.current && !isCarouselHoveredRef.current) {
         setCurvedOffset((prev) => prev + dt * 0.28);
       }
       rafId = requestAnimationFrame(tick);
     };
     rafId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafId);
-  }, []);
+    return () => {
+      cancelAnimationFrame(rafId);
+      if (observer) observer.disconnect();
+    };
+  }, [activePage]);
 
   // GSAP + ScrollTrigger Master Setup (runs cleanly whenever Home is active)
   useEffect(() => {
@@ -766,8 +785,9 @@ export default function App() {
               progressRef={heroProgressRef}
               framesDir="/assets/hero_women_frames"
               totalFrames={301}
+              frameStep={2}
               topOffsetPx={29}
-              cacheVersion="3"
+              cacheVersion="4"
             />
           </Suspense>
           <div className="boutique-lighting-vignette" />
@@ -1772,7 +1792,9 @@ export default function App() {
                 videoSrc="/assets/showroom_walkthrough.mp4"
                 framesDir="/assets/showroom_frames"
                 totalFrames={241}
+                frameStep={2}
                 topOffsetPx={0}
+                cacheVersion="4"
               />
             </Suspense>
             <div className="cinematic-vignette-dark stories-video-vignette" />
